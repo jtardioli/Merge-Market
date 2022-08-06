@@ -5,10 +5,10 @@ import "forge-std/Test.sol";
 import "../MergePredictionMarket.sol";
 
 interface CheatCodes {
-  function prank(address) external;
-  function expectRevert(bytes4) external;
-  function expectRevert(bytes memory) external;
-  function warp(uint256) external;
+    function prank(address) external;
+    function expectRevert(bytes4) external;
+    function expectRevert(bytes memory) external;
+    function warp(uint256) external;
 }
 
 contract MergePredictionMarketTest is Test {
@@ -16,7 +16,6 @@ contract MergePredictionMarketTest is Test {
     MergePredictionMarket mergePredictionMarket;
 
     function setUp() public {
-      mergePredictionMarket = new MergePredictionMarket();
+        mergePredictionMarket = new MergePredictionMarket();
     }
-
 }
