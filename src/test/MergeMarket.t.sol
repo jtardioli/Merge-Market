@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../MergePredictionMarket.sol";
+import "../MergeMarket.sol";
 
 interface CheatCodes {
     function prank(address) external;
@@ -11,11 +11,11 @@ interface CheatCodes {
     function warp(uint256) external;
 }
 
-contract MergePredictionMarketTest is Test {
+contract MergeMarketTest is Test {
     CheatCodes cheats = CheatCodes(HEVM_ADDRESS);
-    MergePredictionMarket mergePredictionMarket;
+    MergeMarket mergePredictionMarket;
 
     function setUp() public {
-        mergePredictionMarket = new MergePredictionMarket();
+        mergePredictionMarket = new MergeMarket();
     }
 }
