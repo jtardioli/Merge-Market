@@ -13,7 +13,6 @@ contract MergeMarket is Ownable {
     // same struct
     uint256 stopBetting = 123;
     uint256 canWithdraw = 456;
-    uint256 canWithdrawOwner = 567;
 
     MergeYes mergeYes;
     MergeNo mergeNo;
@@ -26,12 +25,11 @@ contract MergeMarket is Ownable {
     // Make a bet
     function makeBet(bool _merged) external payable {
         if (block.timestamp > stopBetting) revert CannotBet();
-        uint256 amount = msg.value * 99 / 100;
         if (_merged) {
-            mergeYes.mint(msg.sender, amount);
+            mergeYes.mint(msg.sender, msg.value);
             return;
         }
-        mergeNo.mint(msg.sender, amount);
+        mergeNo.mint(msg.sender, msg.value);
     }
 
     function withdrawBet() external {
@@ -53,13 +51,6 @@ contract MergeMarket is Ownable {
         }
 
         (bool success,) = payable(msg.sender).call{value: amountWon}("");
-        if (!success) revert FailedTransfer();
-    }
-
-    function withdraw() external onlyOwner {
-        if (block.timestamp < canWithdrawOwner) revert FailedTransfer();
-        (bool success,) =
-            payable(msg.sender).call{value: address(this).balance}("");
         if (!success) revert FailedTransfer();
     }
 }
