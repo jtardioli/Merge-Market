@@ -10,12 +10,12 @@ error BeforeMerge();
 error BettingPeriodOver();
 
 contract MergeMarket is Ownable {
-    uint256 bettingEnd = 123;
-    uint256 withdrawStart = 456;
+    uint256 public bettingEnd = 123;
+    uint256 public withdrawStart = 456;
     bool mergeSuccess;
 
-    MergeYes mergeYes;
-    MergeNo mergeNo;
+    MergeYes public mergeYes;
+    MergeNo public mergeNo;
 
     constructor() {
         mergeYes = new MergeYes();
