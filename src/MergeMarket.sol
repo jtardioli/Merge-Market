@@ -8,7 +8,6 @@ import "./MergeNo.sol";
 error FailedTransfer();
 error BeforeMerge();
 error BettingPeriodOver();
-error YouLost();
 
 contract MergeMarket is Ownable {
     uint256 bettingEnd = 123;
