@@ -7,12 +7,14 @@ import "./MergeNo.sol";
 
 error FailedTransfer();
 error BeforeMerge();
+error NotFinalized();
 error BettingPeriodOver();
 
 contract MergeMarket is Ownable {
     uint256 public bettingEnd = 123;
     uint256 public withdrawStart = 456;
-    bool mergeSuccess;
+    bool public mergeSuccess;
+    bool public isFinalized;
 
     MergeYes public mergeYes;
     MergeNo public mergeNo;
@@ -33,7 +35,7 @@ contract MergeMarket is Ownable {
     }
 
     function redeemWinnings() external {
-        if (block.timestamp < withdrawStart) revert BeforeMerge();
+        if (!isFinalized) revert NotFinalized();
 
         uint256 amountWon;
 
@@ -55,6 +57,7 @@ contract MergeMarket is Ownable {
 
     function finalize() external {
         if (block.timestamp < withdrawStart) revert BeforeMerge();
+        isFinalized = true;
         mergeSuccess = block.difficulty < type(uint64).max;
     }
 }
