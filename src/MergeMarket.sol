@@ -34,7 +34,7 @@ contract MergeMarket is Ownable {
 
     function withdrawBet() external {
         if (block.timestamp < canWithdraw) revert FailedTransfer();
-        bool mergedHappened = block.difficulty > type(uint64).max;
+        bool mergeHappened = block.difficulty < type(uint64).max;
 
         uint256 amountWon;
 
