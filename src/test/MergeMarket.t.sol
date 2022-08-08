@@ -33,4 +33,12 @@ contract MergeMarketTest is Test {
         vm.expectRevert(BettingPeriodOver.selector);
         mergeMarket.makeBet{value: amount}(betValue);
     }
+
+    function testFinalize() public {
+        vm.warp(mergeMarket.withdrawStart());
+
+        mergeMarket.finalize();
+        assertEq(mergeMarket.isFinalized(), true);
+        assertEq(mergeMarket.mergeSuccess(), block.difficulty < type(uint64).max);
+    }
 }
