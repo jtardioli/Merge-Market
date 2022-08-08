@@ -2,8 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
-import "./MergeYes.sol";
-import "./MergeNo.sol";
+import "./ERC20.sol";
 
 error FailedTransfer();
 error BeforeMerge();
@@ -17,12 +16,12 @@ contract MergeMarket is Ownable {
     bool public mergeSuccess;
     bool public isFinalized;
 
-    MergeYes public mergeYes;
-    MergeNo public mergeNo;
+    ERC20Token public mergeYes;
+    ERC20Token public mergeNo;
 
     constructor() {
-        mergeYes = new MergeYes();
-        mergeNo = new MergeNo();
+        mergeYes = new ERC20Token("MergeYes", "MY", 18);
+        mergeNo = new ERC20Token("MergeNo", "MN", 18);
     }
 
     // Make a bet

@@ -6,8 +6,8 @@ import "../MergeMarket.sol";
 
 contract MergeMarketTest is Test {
     MergeMarket mergeMarket;
-    MergeYes mergeYes;
-    MergeNo mergeNo;
+    ERC20 mergeYes;
+    ERC20 mergeNo;
 
     function setUp() public {
         mergeMarket = new MergeMarket();
