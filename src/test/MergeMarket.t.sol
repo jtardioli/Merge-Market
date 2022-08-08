@@ -39,6 +39,11 @@ contract MergeMarketTest is Test {
 
         mergeMarket.finalize();
         assertEq(mergeMarket.isFinalized(), true);
-        assertEq(mergeMarket.mergeSuccess(), block.difficulty < type(uint64).max);
+        // Should always return true since block.difficulty is 0 locally
+        assertEq(mergeMarket.mergeSuccess(), true);
+    }
+
+    function testCannotFinalizeBeforeMerge() public {
+
     }
 }
