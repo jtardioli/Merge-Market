@@ -33,7 +33,7 @@ contract MergeMarket is Ownable {
         mergeNo.mint(msg.sender, msg.value);
     }
 
-    function withdrawBet() external {
+    function redeemWinnings() external {
         if (block.timestamp < withdrawStart) revert BeforeMerge();
 
         uint256 amountWon;
