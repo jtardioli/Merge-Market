@@ -49,4 +49,12 @@ contract MergeMarketTest is Test {
         vm.expectRevert(BeforeMerge.selector);
         mergeMarket.finalize();
     }
+
+    function testCannotFinalizeIfAlreadyFinalized() public {
+        vm.warp(mergeMarket.withdrawStart());
+
+        mergeMarket.finalize();
+        vm.expectRevert(AlreadyFinalized.selector);
+        mergeMarket.finalize();
+    }
 }
