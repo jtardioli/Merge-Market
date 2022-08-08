@@ -57,4 +57,26 @@ contract MergeMarketTest is Test {
         vm.expectRevert(AlreadyFinalized.selector);
         mergeMarket.finalize();
     }
+
+    function testRedeemWinnings() public {
+        vm.warp(mergeMarket.bettingEnd() - 1);
+
+        mergeMarket.makeBet{value: 1 ether}(true);
+        assertEq(mergeYes.balanceOf(address(this)), 1 ether);
+
+        hoax(address(0xBEEF));
+        mergeMarket.makeBet{value: 1 ether}(false);
+
+        vm.warp(mergeMarket.withdrawStart());
+        mergeMarket.finalize();
+
+        uint256 balanceBefore = address(this).balance;
+        mergeMarket.redeemWinnings();
+        uint256 balanceAfter = address(this).balance;
+
+        assertEq(balanceAfter - balanceBefore, 2 ether);
+        assertEq(mergeYes.balanceOf(address(this)), 0);
+    }
+
+    receive() external payable {}
 }
