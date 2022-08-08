@@ -6,13 +6,14 @@ import "./MergeYes.sol";
 import "./MergeNo.sol";
 
 error FailedTransfer();
+error BeforeMerge();
+error BettingPeriodOver();
 error YouLost();
-error CannotBet();
 
 contract MergeMarket is Ownable {
-    // same struct
-    uint256 stopBetting = 123;
-    uint256 canWithdraw = 456;
+    uint256 bettingEnd = 123;
+    uint256 withdrawStart = 456;
+    bool mergeSuccess;
 
     MergeYes mergeYes;
     MergeNo mergeNo;
@@ -24,7 +25,7 @@ contract MergeMarket is Ownable {
 
     // Make a bet
     function makeBet(bool _merged) external payable {
-        if (block.timestamp > stopBetting) revert CannotBet();
+        if (block.timestamp > bettingEnd) revert BettingPeriodOver();
         if (_merged) {
             mergeYes.mint(msg.sender, msg.value);
             return;
@@ -33,12 +34,11 @@ contract MergeMarket is Ownable {
     }
 
     function withdrawBet() external {
-        if (block.timestamp < canWithdraw) revert FailedTransfer();
-        bool mergeHappened = block.difficulty < type(uint64).max;
+        if (block.timestamp < withdrawStart) revert BeforeMerge();
 
         uint256 amountWon;
 
-        if (mergedHappened) {
+        if (mergeSuccess) {
             amountWon = (mergeYes.totalSupply() + mergeNo.totalSupply())
                 * mergeYes.balanceOf(msg.sender)
                 / mergeYes.totalSupply();
@@ -52,5 +52,10 @@ contract MergeMarket is Ownable {
 
         (bool success,) = payable(msg.sender).call{value: amountWon}("");
         if (!success) revert FailedTransfer();
+    }
+
+    function finalize() external {
+        if (block.timestamp < withdrawStart) revert BeforeMerge();
+        mergeSuccess = block.difficulty < type(uint64).max;
     }
 }
