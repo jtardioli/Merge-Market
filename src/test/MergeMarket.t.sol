@@ -77,6 +77,34 @@ contract MergeMarketTest is Test {
         assertEq(balanceAfter - balanceBefore, 2 ether);
         assertEq(mergeYes.balanceOf(address(this)), 0);
     }
+
+    function testRedeemWinningsMany(uint96 betOne, uint96 betTwo, uint96 betThree) public {
+        vm.assume(uint256(betOne) > 0 && uint256(betThree) > 0);
+        vm.warp(mergeMarket.bettingEnd() - 1);
+
+        mergeMarket.makeBet{value: betOne}(true);
+        assertEq(mergeYes.balanceOf(address(this)), betOne);
+
+        hoax(address(0xBEEF));
+        mergeMarket.makeBet{value: betTwo}(false);
+
+        hoax(address(0xC0FFEE));
+        mergeMarket.makeBet{value: betThree}(true);
+
+        vm.warp(mergeMarket.withdrawStart());
+        mergeMarket.finalize();
+
+        uint256 totalPotSize = uint256(betOne) + uint256(betTwo) + uint256(betThree);
+        uint256 yesTotalPotSize = uint256(betOne) + uint256(betThree);
+
+        // Check betOne result
+        uint256 balanceBefore = address(this).balance;
+        mergeMarket.redeemWinnings();
+        uint256 balanceAfter = address(this).balance;
+
+        assertEq(balanceAfter - balanceBefore, totalPotSize * mergeYes.balanceOf(address(this)) / yesTotalPotSize);
+        assertEq(mergeYes.balanceOf(address(this)), 0);
+    }
     
     function testCannotRedeemWinningsUnfinalized() public {
         vm.warp(mergeMarket.bettingEnd() - 1);

@@ -41,18 +41,22 @@ contract MergeMarket is Ownable {
         uint256 amountWon;
 
         if (mergeSuccess) {
+            uint256 balance = mergeYes.balanceOf(msg.sender);
+            if (balance == 0) revert NoWinnings();
+
             amountWon = (mergeYes.totalSupply() + mergeNo.totalSupply())
-                * mergeYes.balanceOf(msg.sender)
+                * balance
                 / mergeYes.totalSupply();
             mergeYes.burn(msg.sender, mergeYes.balanceOf(msg.sender));
         } else {
+            uint256 balance = mergeNo.balanceOf(msg.sender);
+            if (balance == 0) revert NoWinnings();
+
             amountWon = (mergeYes.totalSupply() + mergeNo.totalSupply())
-                * mergeNo.balanceOf(msg.sender)
+                * balance
                 / mergeNo.totalSupply();
             mergeNo.burn(msg.sender, mergeYes.balanceOf(msg.sender));
         }
-
-        if (amountWon == 0) revert NoWinnings();
 
         (bool success,) = payable(msg.sender).call{value: amountWon}("");
         if (!success) revert FailedTransfer();
