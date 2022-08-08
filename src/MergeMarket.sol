@@ -9,6 +9,7 @@ error BeforeMerge();
 error NotFinalized();
 error BettingPeriodOver();
 error AlreadyFinalized();
+error NoWinnings();
 
 contract MergeMarket is Ownable {
     uint256 public bettingEnd = 123;
@@ -50,6 +51,8 @@ contract MergeMarket is Ownable {
                 / mergeNo.totalSupply();
             mergeNo.burn(msg.sender, mergeYes.balanceOf(msg.sender));
         }
+
+        if (amountWon == 0) revert NoWinnings();
 
         (bool success,) = payable(msg.sender).call{value: amountWon}("");
         if (!success) revert FailedTransfer();

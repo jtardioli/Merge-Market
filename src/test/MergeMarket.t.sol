@@ -90,5 +90,21 @@ contract MergeMarketTest is Test {
         mergeMarket.redeemWinnings();
     }
 
+    function testCannotRedeemWinningsLosingToken() public {
+        vm.warp(mergeMarket.bettingEnd() - 1);
+
+        mergeMarket.makeBet{value: 1 ether}(false);
+        assertEq(mergeNo.balanceOf(address(this)), 1 ether);
+
+        hoax(address(0xBEEF));
+        mergeMarket.makeBet{value: 1 ether}(true);
+
+        vm.warp(mergeMarket.withdrawStart());
+        mergeMarket.finalize();
+
+        vm.expectRevert(NoWinnings.selector);
+        mergeMarket.redeemWinnings();
+    }
+
     receive() external payable {}
 }
