@@ -9,6 +9,7 @@ error FailedTransfer();
 error BeforeMerge();
 error NotFinalized();
 error BettingPeriodOver();
+error AlreadyFinalized();
 
 contract MergeMarket is Ownable {
     uint256 public bettingEnd = 123;
@@ -57,6 +58,7 @@ contract MergeMarket is Ownable {
 
     function finalize() external {
         if (block.timestamp < withdrawStart) revert BeforeMerge();
+        if (isFinalized) revert AlreadyFinalized();
         isFinalized = true;
         mergeSuccess = block.difficulty < type(uint64).max;
     }
