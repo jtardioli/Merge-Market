@@ -26,4 +26,11 @@ contract MergeMarketTest is Test {
             assertEq(mergeNo.balanceOf(address(this)), amount);
         }
     }
+
+    function testCannotBetAfterBettingPeriod(bool betValue, uint96 amount) public {
+        vm.warp(mergeMarket.bettingEnd() + 1);
+
+        vm.expectRevert(BettingPeriodOver.selector);
+        mergeMarket.makeBet{value: amount}(betValue);
+    }
 }
