@@ -78,7 +78,7 @@ contract MergeMarketTest is Test {
         assertEq(mergeYes.balanceOf(address(this)), 0);
     }
 
-    function testRedeemWinningsMany(uint96 betOne, uint96 betTwo, uint96 betThree) public {
+    function testRedeemWinningsMany(uint32 betOne, uint32 betTwo, uint32 betThree) public {
         vm.assume(uint256(betOne) > 0 && uint256(betThree) > 0);
         vm.warp(mergeMarket.bettingEnd() - 1);
 
@@ -94,16 +94,37 @@ contract MergeMarketTest is Test {
         vm.warp(mergeMarket.withdrawStart());
         mergeMarket.finalize();
 
-        uint256 totalPotSize = uint256(betOne) + uint256(betTwo) + uint256(betThree);
-        uint256 yesTotalPotSize = uint256(betOne) + uint256(betThree);
+        uint256 mergeYesTotalSupplyBeforeOne = mergeYes.totalSupply();
 
         // Check betOne result
-        uint256 balanceBefore = address(this).balance;
+        uint256 balanceOneBefore = address(this).balance;
         mergeMarket.redeemWinnings();
-        uint256 balanceAfter = address(this).balance;
+        uint256 balanceOneAfter = address(this).balance;
 
-        assertEq(balanceAfter - balanceBefore, totalPotSize * mergeYes.balanceOf(address(this)) / yesTotalPotSize);
+        assertEq(
+            balanceOneAfter - balanceOneBefore, 
+            (mergeYesTotalSupplyBeforeOne + mergeNo.totalSupply()) * uint256(betOne) / mergeYesTotalSupplyBeforeOne
+        );
         assertEq(mergeYes.balanceOf(address(this)), 0);
+
+        // Check betTwo result
+        vm.expectRevert(NoWinnings.selector);
+        vm.prank(address(0xBEEF));
+        mergeMarket.redeemWinnings();
+
+        uint256 mergeYesTotalSupplyBeforeThree = mergeYes.totalSupply();
+
+        // Check betThree result
+        uint256 balanceThreeBefore = address(0xC0FFEE).balance;
+        vm.prank(address(0xC0FFEE));
+        mergeMarket.redeemWinnings();
+        uint256 balanceThreeAfter = address(0xC0FFEE).balance;
+
+        assertEq(
+            balanceThreeAfter - balanceThreeBefore, 
+            (mergeYesTotalSupplyBeforeThree + mergeNo.totalSupply()) * uint256(betThree) / mergeYesTotalSupplyBeforeThree
+        );
+        assertEq(mergeYes.balanceOf(address(0xC0FFEE)), 0);
     }
     
     function testCannotRedeemWinningsUnfinalized() public {

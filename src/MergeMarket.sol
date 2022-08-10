@@ -12,8 +12,8 @@ error AlreadyFinalized();
 error NoWinnings();
 
 contract MergeMarket is Ownable {
-    uint256 public bettingEnd = 123;
-    uint256 public withdrawStart = 456;
+    uint256 public constant bettingEnd = 123;
+    uint256 public constant withdrawStart = 456;
     bool public mergeSuccess;
     bool public isFinalized;
 
